@@ -18,23 +18,18 @@ module Google
     module ENV
       OS_VERSION = begin
         if RUBY_PLATFORM =~ /mswin|win32|mingw|bccwin|cygwin/
-          # TODO(bobaman)
-          # Confirm that all of these Windows environments actually have access
-          # to the `ver` command.
-          `ver`.sub(/\s*\[Version\s*/, '/').sub(']', '').strip
+          `ver`.sub(/\s*\[Version\s*/, '/').sub(']', '')
         elsif RUBY_PLATFORM =~ /darwin/i
           "Mac OS X/#{`sw_vers -productVersion`}"
         elsif RUBY_PLATFORM == 'java'
-          # Get the information from java system properties to avoid spawning a
-          # sub-process, which is not friendly in some contexts (web servers).
           require 'java'
           name = java.lang.System.getProperty('os.name')
           version = java.lang.System.getProperty('os.version')
           "#{name}/#{version}"
         else
           `uname -sr`.sub(' ', '/')
-        end
-      rescue Exception
+        end.strip
+      rescue
         RUBY_PLATFORM
       end
     end
